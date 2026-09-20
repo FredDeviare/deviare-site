@@ -1,0 +1,345 @@
+/* ---------------------------------------------------------------------------
+   Deviare.io
+   One stylesheet for all three pages. Tokens first, then layout, then the
+   handful of components that appear more than once.
+
+   Why the palette is warm rather than neutral: the whole visual argument is
+   that this reads as considered infrastructure rather than growth-stage SaaS.
+   Warm greys do that, pure greys and pure black do not. The accent is the
+   deck's coral darkened to #B9482F so it clears 4.5:1 on the ground at body
+   size, which the deck's #E87159 does not.
+--------------------------------------------------------------------------- */
+
+:root {
+  --ground:     #FBFAF7;  /* same warm off-white as the deck */
+  --fill:       #F6F3ED;  /* one step down, used only for enclosures that mean something */
+  --ink:        #16130F;
+  --body:       #47403A;
+  --body-soft:  #5A524B;
+  --muted:      #756C64;
+  --faint:      #8C837A;
+  --hair:       #E4DED5;
+  --hair-soft:  #EFEAE2;
+  --rule:       #DCD4C8;
+  --accent:     #B9482F;
+
+  --display: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* The column is fluid, not stepped. --edge grows with the viewport so the
+     margins stay proportional at any resolution, and --shell only stops it
+     running away on very large monitors. Prose is capped separately by
+     --measure, so the diagrams get the full width while text stays readable. */
+  --edge: clamp(20px, 5vw, 140px);
+  --shell: 1800px;
+  --measure: 760px;
+
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: var(--ink); }
+a:hover { color: var(--accent); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* --- layout ------------------------------------------------------------- */
+
+.wrap { width: min(calc(100% - 2 * var(--edge)), var(--shell)); margin-inline: auto; }
+
+.section { padding-block: clamp(56px, 8vw, 148px); }
+.section + .section { border-top: 1px solid var(--hair); }
+
+/* --- type --------------------------------------------------------------- */
+
+h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; letter-spacing: -0.012em; font-optical-sizing: auto; }
+h1 { font-size: clamp(38px, 5.4vw, 92px); line-height: 1.08; }
+h2 { font-size: clamp(30px, 3.8vw, 66px); line-height: 1.1; }
+h3 { font-size: clamp(25px, 3.2vw, 46px); line-height: 1.18; }
+
+p { margin: 0; }
+.lead { font-size: clamp(17px, 1.6vw, 19px); line-height: 1.63; color: var(--body); max-width: var(--measure); }
+.prose { font-size: 17px; line-height: 1.66; color: var(--body-soft); max-width: var(--measure); }
+.subhead {
+  font-family: var(--display); font-size: clamp(21px, 2.1vw, 34px);
+  line-height: 1.32; color: var(--body); max-width: 46ch;
+}
+.small { font-size: 14.5px; line-height: 1.6; color: var(--faint); }
+
+.eyebrow {
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.18em;
+  color: var(--accent); text-transform: uppercase;
+}
+.label {
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.14em;
+  color: var(--muted); text-transform: uppercase;
+}
+.mono { font-family: var(--mono); }
+
+.stack { display: flex; flex-direction: column; gap: clamp(22px, 2vw, 36px); }
+.stack-sm { display: flex; flex-direction: column; gap: clamp(13px, 1vw, 18px); }
+
+/* --- header ------------------------------------------------------------- */
+
+.site-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+  /* The header is the first thing on a very tall page, so its top margin grows
+     with the viewport instead of sitting at a fixed 30px. */
+  padding-block: clamp(28px, 3.2vw, 60px) 0;
+}
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.brand img { height: clamp(26px, 1.6vw, 32px); width: auto; }
+.brand span {
+  font-family: var(--mono); font-size: clamp(18px, 1.05vw, 22px); letter-spacing: 0.14em;
+  color: var(--ink); line-height: 1; padding-top: 2px;
+}
+.brand .dot { color: var(--accent); }
+
+.site-nav { display: flex; gap: clamp(18px, 2.8vw, 54px); flex-wrap: wrap; }
+.site-nav a {
+  font-family: var(--mono); font-size: clamp(12.5px, 0.75vw, 14px); letter-spacing: 0.12em;
+  color: var(--muted); text-decoration: none; padding-bottom: 3px;
+}
+.site-nav a[aria-current="page"] { color: var(--ink); border-bottom: 1px solid var(--accent); }
+
+/* --- hero --------------------------------------------------------------- */
+
+.hero { position: relative; }
+/* The art is a child of .wrap, so it is positioned against the content column,
+   not the viewport. On a wide monitor it therefore stays inside the column and
+   reads as one composition with the headline instead of drifting to the far
+   right. --hero-copy is the width the copy may take; the art gets what is left
+   of the column after the copy and a gap, capped at 880px. That arithmetic is
+   what keeps the graph off the paragraph between 900 and 1440, where the two
+   used to overlap by about a tenth of the viewport. */
+.hero > .wrap { position: relative; --hero-copy: min(860px, 52%); --hero-gap: 24px; }
+.hero-inner {
+  position: relative; z-index: 1;
+  padding-block: clamp(56px, 11vw, 132px) clamp(40px, 6vw, 72px);
+  display: flex; flex-direction: column; gap: clamp(22px, 3vw, 30px);
+  max-width: var(--hero-copy);
+}
+.hero h1 { max-width: 13ch; }
+.hero .lead { max-width: 650px; }
+
+/* The network sits beside the copy, never behind it: nothing on this site puts
+   lines behind body text. There is no scrim in the SVG; one was tried and its
+   left edge showed as a vertical seam over the transparent artwork. The graph is
+   centred on the hero's height and masked at both ends, and the right fade
+   finishes at 96% of the art's own width, inside the column, so no clip is
+   needed to hide a cut. Below 900px there is no room beside the copy and the
+   art is dropped rather than dimmed behind the text. */
+.hero-art {
+  position: absolute; top: 50%; right: 0; transform: translateY(-50%);
+  width: min(880px, calc(100% - var(--hero-copy) - var(--hero-gap)));
+  pointer-events: none; z-index: 0;
+  /* Only the ends are faded. An earlier 58% stop dimmed most of the picture, so
+     the graph read as a smudge. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 15%, #000 84%, transparent 96%);
+  mask-image: linear-gradient(to right, transparent 0, #000 15%, #000 84%, transparent 96%);
+}
+.hero-art svg { width: 100%; height: auto; display: block; }
+
+.actions { display: flex; align-items: center; gap: clamp(20px, 3vw, 36px); flex-wrap: wrap; margin-top: 6px; }
+.link-primary {
+  font-size: 16px; color: var(--ink); text-decoration: none;
+  border-bottom: 1px solid var(--accent); padding-bottom: 5px;
+}
+.link-quiet {
+  font-size: 16px; color: var(--muted); text-decoration: none;
+  border-bottom: 1px solid var(--hair); padding-bottom: 5px;
+}
+
+.strip {
+  display: flex; align-items: center; gap: clamp(10px, 1.6vw, 22px); flex-wrap: wrap;
+  border-top: 1px solid var(--hair); padding-block: 20px 34px;
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.06em; color: var(--muted);
+  position: relative; z-index: 1;
+}
+.strip .sep { color: #D6CEC3; }
+.strip .key { color: var(--accent); }
+
+/* --- column groups ------------------------------------------------------ */
+
+.cols { display: grid; gap: 0; }
+.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cols > * { padding: clamp(32px, 3vw, 52px) clamp(24px, 3vw, 56px) 0; }
+.cols > *:first-child { padding-left: 0; }
+.cols > *:last-child { padding-right: 0; }
+.cols > * + * { border-left: 1px solid var(--hair); }
+.cols-top { border-top: 1px solid var(--hair); }
+
+/* --- waterfall ---------------------------------------------------------- */
+
+.bar-row { display: grid; grid-template-columns: clamp(190px, 14vw, 250px) 1fr clamp(240px, 17vw, 300px); gap: clamp(28px, 2.6vw, 48px); align-items: center; }
+.bar-num { font-family: var(--display); font-size: clamp(34px, 5vw, 66px); line-height: 1; }
+.bar-track { height: clamp(12px, 0.9vw, 16px); background: #E0D9CE; }
+.bar-fill { height: clamp(12px, 0.9vw, 16px); background: var(--accent); }
+.bar-note { display: flex; flex-direction: column; gap: 3px; }
+.bar-note .k { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.12em; color: var(--ink); }
+.bar-note .v { font-size: 14px; color: var(--muted); }
+
+.price {
+  display: grid; grid-template-columns: clamp(190px, 14vw, 250px) 1fr clamp(240px, 17vw, 300px); gap: clamp(28px, 2.6vw, 48px);
+}
+.price-inner {
+  grid-column: 2; display: flex; gap: clamp(20px, 4vw, 40px); flex-wrap: wrap;
+  border-left: 2px solid #E0D9CE; padding: 10px 0 10px 26px;
+}
+.price-num { font-family: var(--display); font-size: clamp(25px, 2.4vw, 36px); line-height: 1; }
+
+.ratios { display: flex; gap: clamp(18px, 3vw, 44px); flex-wrap: wrap; align-items: baseline; font-size: 16px; color: var(--body); }
+.ratios b { font-weight: 500; }
+.ratios .was { color: var(--faint); }
+
+/* --- the account diagram ------------------------------------------------ */
+
+/* The deck runs this left to right across 13 inches. A 1160px content column
+   cannot carry five columns, and forcing it squeezed each stage to about 110px
+   of text width and broke every line. Top to bottom instead: the stages then get
+   a third of the column each, and the order is the reading order anyway. */
+.flow { display: flex; flex-direction: column; align-items: stretch; }
+.flow-in { display: flex; gap: clamp(20px, 3vw, 44px); align-items: baseline; flex-wrap: wrap; }
+.flow-in .who { flex: 0 0 auto; }
+.flow-in .what { flex: 1 1 380px; display: flex; flex-direction: column; gap: 6px; }
+.flow-down { display: flex; justify-content: center; font-family: var(--mono); font-size: 22px; color: #C3B9AC; padding-block: 18px; }
+.flow-out { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3vw, 40px); }
+.account { border: 1px solid var(--rule); background: var(--fill); display: flex; flex-direction: column; }
+.account-head, .account-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding: 18px clamp(16px, 2vw, 26px);
+}
+.account-head { border-bottom: 1px solid var(--hair); }
+.account-foot { border-top: 1px solid var(--hair); }
+.stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); flex-grow: 1; }
+.stage h4 { font-size: clamp(19px, 1.35vw, 24px); }
+.stage { padding: 32px clamp(22px, 2.2vw, 36px); display: flex; flex-direction: column; gap: 12px; }
+.stage + .stage { border-left: 1px solid var(--hair); }
+.stage:last-child { background: var(--ground); }
+.stage h4 { margin: 0; font-family: var(--sans); font-size: 19px; font-weight: 500; line-height: 1.26; }
+.stage p { font-size: 14.5px; line-height: 1.6; color: var(--body-soft); }
+.chip {
+  border: 1px solid var(--rule); padding: 7px 13px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--body-soft);
+}
+.chip-accent { border-color: var(--accent); color: var(--accent); letter-spacing: 0.1em; align-self: flex-start; }
+.chips { display: flex; gap: 9px; flex-wrap: wrap; }
+.consumer { border-top: 2px solid var(--accent); padding-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.consumer b { font-size: 17px; font-weight: 500; }
+.consumer p { font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+
+/* --- timeline ----------------------------------------------------------- */
+
+.timeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) clamp(196px, 14vw, 250px); gap: clamp(26px, 2.4vw, 44px); }
+/* The contact section repeats the replay in three steps. */
+.timeline-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tl { display: flex; flex-direction: column; gap: 13px; }
+.tl .tick { height: 3px; background: var(--rule); }
+.tl.gate .tick { background: var(--accent); }
+.tl .wk { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.12em; color: var(--ink); }
+.tl.gate .wk { color: var(--accent); }
+.tl p { font-size: 15.5px; line-height: 1.5; color: var(--body-soft); }
+.tl.gate p { color: var(--ink); font-weight: 500; }
+
+/* Set apart by a left rule in the accent, not an enclosure. The account box is
+   the only box on the page and that is what makes it mean something; a second
+   box would turn it into a card. This is the same device as the price block's
+   left rule and the consumers' top rule, so nothing new is introduced. */
+.ask {
+  display: flex; align-items: center; gap: clamp(16px, 3vw, 40px); flex-wrap: wrap;
+  border-left: 2px solid var(--accent); padding: 12px 0 12px clamp(22px, 3vw, 44px);
+}
+.ask p { font-size: clamp(16px, 1.6vw, 18px); line-height: 1.55; color: var(--ink); }
+
+/* --- research timeline -------------------------------------------------- */
+
+.study { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: clamp(16px, 3vw, 40px); padding-block: 22px; border-bottom: 1px solid var(--hair-soft); }
+.study .yr { font-family: var(--display); font-size: 30px; line-height: 1; color: var(--accent); }
+.study .what { font-size: 17.5px; line-height: 1.5; }
+.study .cite { font-family: var(--mono); font-size: 12.5px; color: var(--faint); margin-top: 6px; }
+/* The fill bleeds into the margins by the same amount it pads, so the year and
+   the text stay on the same vertical lines as the rows around it. */
+.study.key { background: var(--fill); padding-inline: 14px; margin-inline: -14px; }
+.study.key .what { font-weight: 500; }
+
+.chain { font-family: var(--mono); font-size: clamp(13px, 1.4vw, 16px); line-height: 1.85; color: var(--body-soft); }
+.chain.ours { color: var(--ink); }
+
+/* --- person ------------------------------------------------------------- */
+
+.person { display: grid; grid-template-columns: 372px minmax(0, 1fr); gap: clamp(32px, 5vw, 76px); align-items: start; }
+.portrait { aspect-ratio: 4 / 5; border: 1px solid var(--hair); background: var(--fill); display: flex; align-items: center; justify-content: center; }
+.portrait span { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: #A79C90; }
+
+/* --- footer ------------------------------------------------------------- */
+
+.site-foot { border-top: 1px solid var(--hair); padding-block: 40px 56px; display: flex; gap: 28px; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; }
+.site-foot .mono { font-size: 12px; letter-spacing: 0.08em; color: var(--faint); }
+
+.pillars { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; border-top: 1px solid var(--hair); padding-top: 28px; }
+.pillars div { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.08em; color: var(--muted); }
+
+/* --- responsive --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .flow-out { grid-template-columns: 1fr; gap: 22px; }
+  .cols-3, .cols-2 { grid-template-columns: 1fr; }
+  /* Stacked, each block needs the same room below its text as above the next
+     block's label, or the prose sits on the hairline. */
+  .cols > * { padding: 28px 0; }
+  .cols > *:last-child { padding-bottom: 0; }
+  .cols > * + * { border-left: 0; border-top: 1px solid var(--hair); }
+  .timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .timeline .tl.gate { grid-column: span 2; }
+  .stages { grid-template-columns: 1fr; }
+  .stage + .stage { border-left: 0; border-top: 1px solid var(--hair); }
+  .person { grid-template-columns: 1fr; }
+  .portrait { max-width: 372px; }
+  .pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* The copy cap exists only so the headline clears the graph beside it. There
+     is no room beside it here, so the graph goes and the copy takes the width. */
+  .hero-art { display: none; }
+  .hero-inner { max-width: none; }
+}
+
+@media (max-width: 680px) {
+  .bar-row { grid-template-columns: 1fr; gap: 10px; }
+  .bar-row .bar-track { order: 3; }
+  .price { grid-template-columns: 1fr; }
+  .price-inner { grid-column: 1; }
+  .study { grid-template-columns: 1fr; gap: 8px; }
+  /* A 14px bleed would stop 6px short of the screen edge here, which reads as
+     a mistake. Run the fill to the edge instead; the text stays on the column. */
+  .study.key { padding-inline: var(--edge); margin-inline: calc(-1 * var(--edge)); }
+  .timeline { grid-template-columns: 1fr; }
+  .timeline .tl.gate { grid-column: auto; }
+  .pillars { grid-template-columns: 1fr; gap: 14px; }
+  .site-head { padding-block: 22px 0; }
+  /* The strip wraps to one fact per line here, so the inline separators would
+     dangle at the end of each line. */
+  .strip { flex-direction: column; align-items: flex-start; gap: 7px; }
+  .strip .sep { display: none; }
+}
+
+@media print {
+  .hero-art { display: none; }
+  body { font-size: 11pt; }
+}

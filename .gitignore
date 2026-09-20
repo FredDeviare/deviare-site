@@ -1,0 +1,8 @@
+# Pages parked until they are cleared for publication. Keeping them out of the
+# repo means they are not served, rather than merely unlinked.
+_parked/
+.DS_Store
+
+# Internal positioning and commercial reasoning. This repository is public.
+CLAUDE.md
+docs/
