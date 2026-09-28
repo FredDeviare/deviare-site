@@ -21,7 +21,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400..600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css">
+<!-- The version is the first eight characters of the stylesheet's md5, so
+     the URL changes whenever the file does and no cache can pair a new page
+     with an old stylesheet. GitHub Pages caches for ten minutes, and that
+     pairing once rendered the research graphic as black dots with no lines.
+     After editing site.css: md5 -q assets/site.css | cut -c1-8, on both pages. -->
+<link rel="stylesheet" href="assets/site.css?v=9b4d0069">
 </head>
 <body>
 
